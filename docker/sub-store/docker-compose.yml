@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  sub-store:
+    image: xream/sub-store:latest
+    container_name: sub-store
+    network_mode: host  # 注意：是 network_mode，不是 network mode
+    restart: always
+    volumes:
+      - /volume1/docker/sub-store-data:/opt/app/data
+    environment:
+      - SUB_STORE_BACKEND_CRON=0 0 * * *    # 修复变量名 & cron 表达式
+      - SUB_STORE_FRONTEND_BACKEND_PATH=/1234567890
+      - SUB_STORE_FRONTEND_HOST=0.0.0.0
+      - SUB_STORE_FRONTEND_PORT=3001
+      - SUB_STORE_DATABASE_PATH=/opt/app/data  # 修复变量名，删除空格
+      - SUB_STORE_BACKEND_API_HOST=0.0.0.0     # 删除前面的多余 -
+      - SUB_STORE_BACKEND_API_PORT=3002
+    stdin_open: true
+    tty: true
