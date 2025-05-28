@@ -37,39 +37,44 @@
     <h2>🔧 通用系统工具</h2>
     <div class="desc">点击右侧按钮复制命令</div>
     <div class="code-box">
-      <span id="cmd1">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/base-tools.sh)"</span>
+      <span id="cmd1">bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/scripts/base-tools.sh)"</span>
       <button class="btn" onclick="copy('cmd1')">复制</button>
     </div>
     <div class="code-box">
-      <span id="cmd2">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/net-optimize.sh)"</span>
+      <span id="cmd2">bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/scripts/net-optimize.sh)"</span>
       <button class="btn" onclick="copy('cmd2')">复制</button>
     </div>
   </div>
 
-  <!-- 🔴 新增开始：Linux 工具区块 -->
   <div class="section">
-    <h2 style="color:red;">🐧 Linux 工具</h2>
-    <div class="desc" style="color:red;">Shell 环境推荐工具（含多源安装选项）</div>
+    <h2>🐧 Linux 工具</h2>
+    <div class="desc">Shell 环境推荐工具（含多源安装选项）</div>
     <div class="code-box">
-      <span id="cmd10" style="color:red;">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/linux/shellclash-install.sh)"</span>
+      <span id="cmd10">bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/scripts/linux/shellclash-install.sh)"</span>
       <button class="btn" onclick="copy('cmd10')">复制</button>
     </div>
+    <div class="code-box">
+      <span id="cmd11">bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/scripts/linux/install-nginx.sh)"</span>
+      <button class="btn" onclick="copy('cmd11')">复制</button>
+    </div>
   </div>
-  <!-- 🔴 新增结束 -->
 
   <div class="section">
     <h2>🖥️ PVE LXC 自动部署</h2>
     <div class="desc">自动分配IP，支持 local/local-lvm，自动下载模板</div>
     <div class="code-box">
-      <span id="cmd3">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-pulse.sh)"</span>
+      <span id="cmd3">🔹 安装 Pulse 容器  
+bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/pve/install-pulse.sh)"</span>
       <button class="btn" onclick="copy('cmd3')">复制</button>
     </div>
     <div class="code-box">
-      <span id="cmd4">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-docker-remote.sh)"</span>
+      <span id="cmd4">🔹 安装 Docker 容器  
+bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/pve/install-docker-remote.sh)"</span>
       <button class="btn" onclick="copy('cmd4')">复制</button>
     </div>
     <div class="code-box">
-      <span id="cmd5">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-tailscale-remote.sh)"</span>
+      <span id="cmd5">🔹 安装 Tailscale 容器  
+bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/pve/install-tailscale-remote.sh)"</span>
       <button class="btn" onclick="copy('cmd5')">复制</button>
     </div>
   </div>
@@ -77,7 +82,7 @@
   <div class="section">
     <h2>📦 群晖 Docker 脚本</h2>
     <div class="code-box">
-      <span id="cmd6">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/nas/pulse-server/generate-pulse-server.sh)"</span>
+      <span id="cmd6">bash -c "$(curl -fsSL https://gitspeed.diynet.club/netio896/diynet-scripts/main/nas/pulse-server/generate-pulse-server.sh)"</span>
       <button class="btn" onclick="copy('cmd6')">复制</button>
     </div>
   </div>
