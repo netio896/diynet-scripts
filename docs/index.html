@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>DiyNet 一键工具合集</title>
+  <style>
+    body { font-family: sans-serif; background-color: #f4f6f8; padding: 2em; }
+    h1 { color: #2c3e50; }
+    .section { margin-bottom: 2em; }
+    .button {
+      display: inline-block;
+      padding: 0.5em 1.2em;
+      margin: 0.3em 0.3em 0.3em 0;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .desc { color: #555; font-size: 0.9em; margin: 0.3em 0 1em; }
+  </style>
+</head>
+<body>
+  <h1>🛠️ DiyNet 一键工具合集</h1>
+
+  <div class="section">
+    <h2>🔧 通用系统工具</h2>
+    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/base-tools.sh">安装常用工具</a>
+    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/net-optimize.sh">网络优化</a>
+  </div>
+
+  <div class="section">
+    <h2>🖥️ PVE LXC 自动部署</h2>
+    <div class="desc">自动分配IP，支持 local/local-lvm，自动下载模板</div>
+    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-pulse.sh">部署 Pulse 容器</a>
+    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-docker-remote.sh">部署 Docker 容器</a>
+    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-tailscale-remote.sh">部署 Tailscale 容器</a>
+  </div>
+
+  <div class="section">
+    <h2>📦 群晖 Docker 脚本</h2>
+    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/nas/pulse-server/generate-pulse-server.sh">生成 Pulse Server 配置</a>
+  </div>
+
+</body>
+</html>
