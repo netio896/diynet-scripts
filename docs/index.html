@@ -4,42 +4,81 @@
   <meta charset="UTF-8">
   <title>DiyNet 一键工具合集</title>
   <style>
-    body { font-family: sans-serif; background-color: #f4f6f8; padding: 2em; }
+    body { font-family: sans-serif; background: #f4f6f8; padding: 2em; }
     h1 { color: #2c3e50; }
     .section { margin-bottom: 2em; }
-    .button {
-      display: inline-block;
-      padding: 0.5em 1.2em;
-      margin: 0.3em 0.3em 0.3em 0;
+    .desc { font-size: 0.9em; color: #555; margin: 0.5em 0; }
+    .code-box {
+      background: #e8e8e8;
+      padding: 0.6em;
+      border-radius: 5px;
+      font-family: monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4em;
+    }
+    .btn {
       background-color: #3498db;
       color: white;
-      text-decoration: none;
+      border: none;
+      padding: 0.4em 0.8em;
+      margin-left: 0.5em;
       border-radius: 4px;
+      cursor: pointer;
     }
-    .desc { color: #555; font-size: 0.9em; margin: 0.3em 0 1em; }
   </style>
 </head>
 <body>
+
   <h1>🛠️ DiyNet 一键工具合集</h1>
 
   <div class="section">
     <h2>🔧 通用系统工具</h2>
-    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/base-tools.sh">安装常用工具</a>
-    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/net-optimize.sh">网络优化</a>
+    <div class="desc">点击右侧按钮复制命令</div>
+    <div class="code-box">
+      <span id="cmd1">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/base-tools.sh)"</span>
+      <button class="btn" onclick="copy('cmd1')">复制</button>
+    </div>
+    <div class="code-box">
+      <span id="cmd2">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/scripts/net-optimize.sh)"</span>
+      <button class="btn" onclick="copy('cmd2')">复制</button>
+    </div>
   </div>
 
   <div class="section">
     <h2>🖥️ PVE LXC 自动部署</h2>
     <div class="desc">自动分配IP，支持 local/local-lvm，自动下载模板</div>
-    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-pulse.sh">部署 Pulse 容器</a>
-    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-docker-remote.sh">部署 Docker 容器</a>
-    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-tailscale-remote.sh">部署 Tailscale 容器</a>
+    <div class="code-box">
+      <span id="cmd3">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-pulse.sh)"</span>
+      <button class="btn" onclick="copy('cmd3')">复制</button>
+    </div>
+    <div class="code-box">
+      <span id="cmd4">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-docker-remote.sh)"</span>
+      <button class="btn" onclick="copy('cmd4')">复制</button>
+    </div>
+    <div class="code-box">
+      <span id="cmd5">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/pve/install-tailscale-remote.sh)"</span>
+      <button class="btn" onclick="copy('cmd5')">复制</button>
+    </div>
   </div>
 
   <div class="section">
     <h2>📦 群晖 Docker 脚本</h2>
-    <a class="button" href="https://raw.githubusercontent.com/netio896/diynet-scripts/main/nas/pulse-server/generate-pulse-server.sh">生成 Pulse Server 配置</a>
+    <div class="code-box">
+      <span id="cmd6">bash -c "$(curl -fsSL https://raw.githubusercontent.com/netio896/diynet-scripts/main/nas/pulse-server/generate-pulse-server.sh)"</span>
+      <button class="btn" onclick="copy('cmd6')">复制</button>
+    </div>
   </div>
+
+  <script>
+    function copy(id) {
+      const el = document.getElementById(id);
+      navigator.clipboard.writeText(el.textContent).then(() => {
+        alert("命令已复制 ✅");
+      });
+    }
+  </script>
 
 </body>
 </html>
