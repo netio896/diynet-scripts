@@ -47,8 +47,8 @@ pct create $CTID ${STORAGE}:vztmpl/$TEMPLATE \
 # 安装 AdGuardHome
 pct exec $CTID -- bash -c "
   apt update &&
-  apt install -y curl sudo && 
-  curl -s -S -L https://github.com/AdguardTeam/AdGuardHome/releases/latest/download/AdGuardHome_linux_amd64.tar.gz -o adgh.tar.gz &&
+  apt install -y curl sudo &&
+  curl -L -o adgh.tar.gz https://github.com/AdguardTeam/AdGuardHome/releases/latest/download/AdGuardHome_linux_amd64.tar.gz &&
   tar -xzf adgh.tar.gz &&
   cd AdGuardHome &&
   ./AdGuardHome -s install

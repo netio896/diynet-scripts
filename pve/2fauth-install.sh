@@ -1,121 +1,33 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Copyright (c) 2021-2025 community-scripts ORG
-# Author: jkrgr0
-# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
-# Source: https://docs.2fauth.app/
+CTID=120 GATEWAY="192.168.88.15" TEMPLATE="debian-12-standard_12.7-1_amd64.tar.zst" HOSTNAME="2fauth"
 
-source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
-color
-verb_ip6
-catch_errors
-setting_up_container
-network_check
-update_os
+自动选择可用存储池
 
-msg_info "Installing Dependencies"
-$STD apt-get install -y \
-  lsb-release
-curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /usr/share/keyrings/deb.sury.org-php.gpg
-echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" >/etc/apt/sources.list.d/php.list
-$STD apt-get update
+for POOL in local-lvm local; do if pvesm status | grep -q "^$POOL" && pveam list $POOL | grep -q "$TEMPLATE"; then STORAGE=$POOL break elif pvesm status | grep -q "^$POOL"; then STORAGE=$POOL echo "===> 模板不存在，正在下载至 [$POOL]..." pveam update && pveam download $POOL $TEMPLATE break fi done
 
-$STD apt-get install -y \
-  nginx \
-  composer \
-  php8.3-{bcmath,common,ctype,curl,fileinfo,fpm,gd,intl,mbstring,mysql,xml,cli}
-msg_ok "Installed Dependencies"
+if [ -z "$STORAGE" ]; then echo "❌ 未找到支持的存储池（local 或 local-lvm）" exit 1 fi
 
-install_mariadb
+自动跳过已占用 IP
 
-msg_info "Setting up Database"
-DB_NAME=2fauth_db
-DB_USER=2fauth
-DB_PASS=$(openssl rand -base64 18 | tr -dc 'a-zA-Z0-9' | head -c13)
-$STD mariadb -u root -e "CREATE DATABASE $DB_NAME;"
-$STD mariadb -u root -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED WITH mysql_native_password AS PASSWORD('$DB_PASS');"
-$STD mariadb -u root -e "GRANT ALL ON $DB_NAME.* TO '$DB_USER'@'localhost'; FLUSH PRIVILEGES;"
-{
-  echo "2FAuth Credentials"
-  echo "Database User: $DB_USER"
-  echo "Database Password: $DB_PASS"
-  echo "Database Name: $DB_NAME"
-} >>~/2FAuth.creds
-msg_ok "Set up Database"
+for i in {100..199}; do ping -c1 -W1 192.168.88.$i &>/dev/null if [ $? -ne 0 ]; then IP="192.168.88.$i/24" break fi done
 
-msg_info "Setup 2FAuth"
-RELEASE=$(curl -fsSL https://api.github.com/repos/Bubka/2FAuth/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
-curl -fsSL "https://github.com/Bubka/2FAuth/archive/refs/tags/${RELEASE}.zip" -o "${RELEASE}.zip"
-$STD unzip "${RELEASE}.zip"
-mv "2FAuth-${RELEASE//v/}/" /opt/2fauth
+创建 LXC 容器
 
-cd "/opt/2fauth" || return
-cp .env.example .env
-IPADDRESS=$(hostname -I | awk '{print $1}')
+echo "===> 创建 2FAuth 容器 [$CTID]，IP=$IP" pct create $CTID ${STORAGE}:vztmpl/$TEMPLATE 
+--hostname $HOSTNAME 
+--net0 name=eth0,bridge=vmbr0,ip=$IP,gw=$GATEWAY 
+--memory 1024 
+--cores 2 
+--unprivileged 1 
+--rootfs $STORAGE:4 
+--features nesting=1 
+--start 1 || { echo "❌ 容器创建失败！"; exit 1; }
 
-sed -i -e "s|^APP_URL=.*|APP_URL=http://$IPADDRESS|" \
-  -e "s|^DB_CONNECTION=$|DB_CONNECTION=mysql|" \
-  -e "s|^DB_DATABASE=$|DB_DATABASE=$DB_NAME|" \
-  -e "s|^DB_HOST=$|DB_HOST=127.0.0.1|" \
-  -e "s|^DB_PORT=$|DB_PORT=3306|" \
-  -e "s|^DB_USERNAME=$|DB_USERNAME=$DB_USER|" \
-  -e "s|^DB_PASSWORD=$|DB_PASSWORD=$DB_PASS|" .env
+安装2FAuth
 
-export COMPOSER_ALLOW_SUPERUSER=1
-$STD composer update --no-plugins --no-scripts
-$STD composer install --no-dev --prefer-source --no-plugins --no-scripts
+pct exec $CTID -- bash -c " apt update && apt install -y curl unzip sudo lsb-release gnupg mariadb-server nginx composer \ php8.3-{bcmath,common,ctype,curl,fileinfo,fpm,gd,intl,mbstring,mysql,xml,cli} && curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /usr/share/keyrings/deb.sury.org-php.gpg && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ \$(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list && apt update && apt install -y php8.3-fpm && DB_PASS="$(openssl rand -base64 18 | tr -dc 'a-zA-Z0-9' | head -c13)" && mariadb -u root -e "CREATE DATABASE 2fauth_db; CREATE USER '2fauth'@'localhost' IDENTIFIED BY '$DB_PASS'; GRANT ALL ON 2fauth_db.* TO '2fauth'@'localhost'; FLUSH PRIVILEGES;" && curl -L -o 2fauth.zip https://github.com/Bubka/2FAuth/archive/refs/heads/main.zip && unzip 2fauth.zip && mv 2FAuth-main /opt/2fauth && cd /opt/2fauth && cp .env.example .env && composer install --no-dev --prefer-source --no-plugins --no-scripts && php artisan key:generate --force && php artisan migrate --force && php artisan passport:install -q -n && php artisan storage:link && php artisan config:cache && chown -R www-data:www-data /opt/2fauth && chmod -R 755 /opt/2fauth "
 
-$STD php artisan key:generate --force
+提示
 
-$STD php artisan migrate:refresh
-$STD php artisan passport:install -q -n
-$STD php artisan storage:link
-$STD php artisan config:cache
-
-chown -R www-data: /opt/2fauth
-chmod -R 755 /opt/2fauth
-
-echo "${RELEASE}" >"/opt/2fauth_version.txt"
-msg_ok "Setup 2fauth"
-
-msg_info "Configure Service"
-cat <<EOF >/etc/nginx/conf.d/2fauth.conf
-server {
-        listen 80;
-        root /opt/2fauth/public;
-        server_name $IPADDRESS;
-        index index.php;
-        charset utf-8;
-
-        location / {
-                try_files \$uri \$uri/ /index.php?\$query_string;
-        }
-
-        location = /favicon.ico { access_log off; log_not_found off; }
-        location = /robots.txt { access_log off; log_not_found off; }
-
-        error_page 404 /index.php;
-
-        location ~ \.php\$ {
-                fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-                fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
-                include fastcgi_params;
-        }
-
-        location ~ /\.(?!well-known).* {
-                deny all;
-        }
-}
-EOF
-
-systemctl reload nginx
-msg_ok "Configured Service"
-
-motd_ssh
-customize
-
-msg_info "Cleaning up"
-rm -f "/opt/v${RELEASE}.zip"
-$STD apt-get -y autoremove
-$STD apt-get -y autoclean
-msg_ok "Cleaned"
+echo "✅ 2FAuth 安装完成，请访问: http://$(echo $IP | cut
